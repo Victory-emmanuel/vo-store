@@ -145,9 +145,10 @@
 
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
+import SignOut from "../auth/SignOut";
 
-function Header() {
-  const { cart } = useAppContext();
+const Header = () => {
+  const { cart, user, userRole } = useAppContext();
 
   return (
     <header className="bg-blue-600 text-white p-4">
@@ -163,14 +164,35 @@ function Header() {
             <li>
               <Link to="/checkout">Checkout ({cart.length})</Link>
             </li>
-            <li>
-              <Link to="/admin">Admin</Link>
-            </li>
+            {user ? (
+              <>
+                <li>
+                  <Link to="/profile">Profile</Link>
+                </li>
+                {userRole === "admin" && (
+                  <li>
+                    <Link to="/admin">Admin</Link>
+                  </li>
+                )}
+                <li>
+                  <SignOut />
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link to="/signin">Sign In</Link>
+                </li>
+                <li>
+                  <Link to="/signup">Sign Up</Link>
+                </li>
+              </>
+            )}
           </ul>
         </nav>
       </div>
     </header>
   );
-}
+};
 
 export default Header;

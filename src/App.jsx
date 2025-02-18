@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // import { useEffect } from "react";
 // import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -33,13 +34,42 @@
 
 // src/App.jsx
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { useAppContext } from "./context/AppContext";
 import AppProvider from "./context/AppContext";
 import Header from "./components/Universal/Header";
 import Footer from "./components/Universal/Footer";
 import Shop from "./pages/Shop";
 import Checkout from "./pages/Checkout";
 import Admin from "./pages/Admin";
+import SignUp from "./components/auth/SignUp";
+import SignIn from "./components/auth/SignIn";
+import Profile from "./pages/Profile";
+import PasswordReset from "./components/auth/PasswordReset";
+
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const { user, userRole, loading } = useAppContext();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
+
+  if (requiredRole && userRole !== requiredRole) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
 
 function App() {
   return (
@@ -47,15 +77,34 @@ function App() {
       <Router>
         <div className="flex flex-col min-h-screen">
           <Header />
-          <main className="flex-grow ">
+          <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Shop />} />
               <Route path="/checkout" element={<Checkout />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <Admin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/reset-password" element={<PasswordReset />} />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </main>
           <Footer />
         </div>
+        <Toaster position="top-right" />
       </Router>
     </AppProvider>
   );
