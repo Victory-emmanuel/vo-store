@@ -11,8 +11,20 @@ const AppProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
 
+  // In AppContext.jsx, update the addToCart function:
   const addToCart = (product) => {
-    setCart([...cart, product]);
+    setCart((currentCart) => {
+      const existingItem = currentCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return currentCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + product.quantity }
+            : item
+        );
+      } else {
+        return [...currentCart, product];
+      }
+    });
   };
 
   const removeFromCart = (productId) => {

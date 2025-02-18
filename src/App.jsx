@@ -38,8 +38,8 @@ import AppProvider from "./context/AppContext";
 import Header from "./components/Universal/Header";
 import Footer from "./components/Universal/Footer";
 import Shop from "./pages/Shop";
-// import Checkout from "./pages/Checkout";
-// import Admin from "./pages/Admin";
+import Checkout from "./pages/Checkout";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -50,8 +50,8 @@ function App() {
           <main className="flex-grow ">
             <Routes>
               <Route path="/" element={<Shop />} />
-              {/* <Route path="/checkout" element={<Checkout />} />
-              <Route path="/admin" element={<Admin />} /> */}
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/admin" element={<Admin />} />
             </Routes>
           </main>
           <Footer />
