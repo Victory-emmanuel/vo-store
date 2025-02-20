@@ -1,11 +1,12 @@
 // src/pages/Checkout.jsx
+
 import { useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { flutterwaveConfig } from "../utils/flutterwave";
 
 const Checkout = () => {
-  const { cart, removeFromCart } = useAppContext();
+  const { cart, removeFromCart, setCart } = useAppContext(); // Added setCart to useAppContext
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     email: "",
@@ -18,6 +19,16 @@ const Checkout = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCustomerInfo({ ...customerInfo, [name]: value });
+  };
+
+  const adjustQuantity = (itemId, amount) => {
+    const updatedCart = cart.map((item) =>
+      item.id === itemId
+        ? { ...item, quantity: Math.max(1, item.quantity + amount) }
+        : item
+    );
+    // You need to implement setCart in your AppContext
+    setCart(updatedCart);
   };
 
   const config = {
@@ -55,9 +66,22 @@ const Checkout = () => {
               key={item.id}
               className="flex justify-between items-center mb-2"
             >
-              <span>
-                {item.name} (x{item.quantity})
-              </span>
+              <span>{item.name}</span>
+              <div>
+                <button
+                  onClick={() => adjustQuantity(item.id, -1)}
+                  className="px-2 py-1 bg-gray-200 rounded-l"
+                >
+                  -
+                </button>
+                <span className="px-2 py-1 bg-gray-100">{item.quantity}</span>
+                <button
+                  onClick={() => adjustQuantity(item.id, 1)}
+                  className="px-2 py-1 bg-gray-200 rounded-r"
+                >
+                  +
+                </button>
+              </div>
               <span>${(item.price * item.quantity).toFixed(2)}</span>
               <button
                 onClick={() => removeFromCart(item.id)}

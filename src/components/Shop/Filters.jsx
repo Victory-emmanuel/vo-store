@@ -1,6 +1,4 @@
 /* eslint-disable react/prop-types */
-// src/components/shop/Filters.jsx
-
 import { Radio } from "@material-tailwind/react";
 
 const Filters = ({ categories, selectedCategory, setSelectedCategory }) => {

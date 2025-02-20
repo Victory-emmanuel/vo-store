@@ -6,6 +6,7 @@ import { createContext, useState, useContext, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../utils/firebase";
+import { toast } from "react-hot-toast";
 
 const AppContext = createContext();
 
@@ -20,17 +21,21 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setUser(user);
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          setUserRole(userDoc.data().role);
+        if (user.emailVerified) {
+          setUser(user);
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            setUserRole(userDoc.data().role);
+          } else {
+            await setDoc(doc(db, "users", user.uid), {
+              email: user.email,
+              role: "user",
+            });
+            setUserRole("user");
+          }
         } else {
-          // If the user document doesn't exist, create it with a default role
-          await setDoc(doc(db, "users", user.uid), {
-            email: user.email,
-            role: "user",
-          });
-          setUserRole("user");
+          toast.error("Please verify your email address.");
+          auth.signOut();
         }
       } else {
         setUser(null);
@@ -48,11 +53,22 @@ export const AppProvider = ({ children }) => {
       if (existingItem) {
         return currentCart.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + product.quantity }
+            ? {
+                ...item,
+                quantity: item.quantity + (product.quantity || 1),
+                price: Number(product.price),
+              }
             : item
         );
       } else {
-        return [...currentCart, product];
+        return [
+          ...currentCart,
+          {
+            ...product,
+            quantity: product.quantity || 1,
+            price: Number(product.price),
+          },
+        ];
       }
     });
   };
@@ -68,6 +84,7 @@ export const AppProvider = ({ children }) => {
     user,
     userRole,
     loading,
+    setCart,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

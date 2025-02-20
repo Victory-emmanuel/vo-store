@@ -1,30 +1,42 @@
 // #src\components\auth\SignOut.jsx
 
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import { auth } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Send verification email
+      await sendEmailVerification(user);
+
+      toast.success("Verification email sent. Please check your inbox.");
       navigate("/");
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message);
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="email" className="block mb-1">
@@ -36,7 +48,7 @@ const SignUp = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded bg-primary text-secondary"
+            className="w-full px-3 py-2 border rounded bg-white text-secondary"
           />
         </div>
         <div>
@@ -49,7 +61,7 @@ const SignUp = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded bg-primary text-secondary"
+            className="w-full px-3 py-2 border rounded  bg-white text-secondary"
           />
         </div>
         <button

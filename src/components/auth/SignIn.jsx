@@ -63,7 +63,7 @@ const SignIn = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border rounded bg-white text-secondary"
           />
         </div>
         <div>
@@ -76,7 +76,7 @@ const SignIn = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border rounded bg-white text-secondary"
           />
         </div>
         <button

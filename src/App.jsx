@@ -33,7 +33,6 @@
 // export default App;
 
 // src/App.jsx
-
 import {
   BrowserRouter as Router,
   Routes,
@@ -52,6 +51,7 @@ import SignUp from "./components/auth/SignUp";
 import SignIn from "./components/auth/SignIn";
 import Profile from "./pages/Profile";
 import PasswordReset from "./components/auth/PasswordReset";
+import OrderHistory from "./pages/OrderHistory";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, userRole, loading } = useAppContext();
@@ -97,6 +97,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/order-history"
+                element={
+                  <ProtectedRoute>
+                    <OrderHistory />
                   </ProtectedRoute>
                 }
               />
